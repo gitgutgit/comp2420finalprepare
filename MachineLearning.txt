@@ -1,0 +1,171 @@
+
+
+1.scatter 그리기와 값 추출
+
+
+plt.figure(figsize=(12,8))
+plt.scatter(Au_data['N_surface'], Au_data['Formation_E'])
+plt.title("Correlation between 'N_surface' and 'Formation_E'")
+plt.xlabel('N_surface')
+plt.ylabel('Formation_E (eV)')
+plt.show()
+
+print("Correlation Coeficient: ",Au_data['Formation_E'].corr(Au_data["N_surface"]))
+
+
+2.Correlation 항목별 추출
+
+기존방식
+print(df["T"].corr(df["Formation_E"]))
+print(df["tau"].corr(df["Formation_E"]))
+print(df["Volume"].corr(df["Formation_E"]))
+print(df["Avg_bonds"].corr(df["Formation_E"]))
+print(df["angle_avg"].corr(df["Formation_E"]))
+
+print("Pearson Correlation Coefficient with 'Formation_E':")
+Au_data[['T', 'tau', 'Volume', 'Avg_bonds', 'angle_avg','Formation_E']].corr(method='pearson')['Formation_E'] 
+한번에 추출법
+
+3.Linear regression
+
+# YOUR CODE HERE
+# drop rows will null value
+q231 = Au_data[['Volume', 'Formation_E']].dropna()
+# fit the model
+lr231 = LinearRegression().fit(q231[['Volume']], q231['Formation_E'])
+
+plt.figure(figsize=(12,8))
+plt.scatter(q231['Volume'], q231['Formation_E'], label='Actual Data')
+x = np.array([0, q231['Volume'].max()])
+plt.plot(x, lr231.predict(x.reshape(-1,1)), c='r', linewidth=2, label='Model')
+plt.xlabel("'Volume' (m^3)")
+plt.ylabel("'Formation_E' (eV)")
+plt.title('Volumn vs Formation_E and with Trained Model')
+plt.legend(loc='best')
+plt.plot()
+
+3.2 DISCUSS 어떤 것이 CHARATERISE MODEL인지 (EVALUATE MODEL)
+r^2 와 RMSE  둘중하나만해도됨
+# YOUR CODE HERE
+true_y = q231["Formation_E"]
+print("Volume model:")
+print(f'Testing R^2 value: {lr231.score(np.array(q231["Volume"]).reshape(-1,1), true_y)}')
+print(f'Testing RMSE value: {np.sqrt(mean_squared_error(lr231.predict(np.array(q231["Volume"]).reshape(-1,1)), true_y))}')
+
+print("Total number of atoms:")
+print(f'Testing R^2 value: {lr232.score(np.array(q232["N_total"]).reshape(-1,1), true_y)}')
+print(f'Testing RMSE value: {np.sqrt(mean_squared_error(lr232.predict(np.array(q232["N_total"]).reshape(-1,1)), true_y))}')
+
+4. TREE!! TREE는 요소들과 결정요소 가필요  GDP >500 이냐  등 YES NO로 (0 1로하든가)
+# YOUR CODE HERE
+avg=Au_data['Formation_E'].mean()
+Au_data['GTAvg'] = Au_data['Formation_E']>=avg
+Au_data['GTAvg'] = Au_data['GTAvg'].astype(str).map({'False': 'No', 'True':'Yes'})
+q24 = Au_data[['Volume', 'N_bulk', 'N_bonds', 'R_avg', 'HCP', 'GTAvg']]
+
+#yes no방식으로 했다면 label encoder 하면됨 다만 q24[원래내용] = le 이렇게해서 적용시킬 데이터프레임에 잘 적용시켱냐함
+le = LabelEncoder()
+q24['GTAvg'] = le.fit_transform(q24['GTAvg'])
+#당연히 train,test
+train, test = train_test_split(q24, test_size=.2)
+# 이젠 d.t 및 !! -1하는이유  gtavg 0 1 판독해둔걸 뺴고 넣어야하니까 x에는 y에 그 나머지하나를 넣으면됨 그래서 아래는 거의 고정느낌)
+
+dt = DecisionTreeClassifier(max_depth=3).fit(train.iloc[:,:-1], train.iloc[:,-1])
+ypredtrain = dt.predict(train.iloc[:,:-1])
+ypredtest = dt.predict(test.iloc[:,:-1])
+print('Training Mean Accuracy:', dt.score(train.iloc[:,:-1], train.iloc[:,-1]))
+print('Testing Mean Accuracy:', dt.score(test.iloc[:,:-1], test.iloc[:,-1]))
+print('Training Recall:', recall_score(train.iloc[:,-1], ypredtrain))
+print('Testing Recall', recall_score(test.iloc[:,-1], ypredtest))
+print('Training Precision:', precision_score(train.iloc[:,-1], ypredtrain))
+print('Testing Precision', precision_score(test.iloc[:,-1], ypredtest))
+
+#labeld gini impuritry
+
+# YOUR CODE HERE
+
+label_gini = 0
+for y in test['GTAvg'].unique():
+    pc = sum(test['GTAvg']==y)/len(test)
+    label_gini += pc * (1-pc)
+print(f'Gini Impurity of the Labels: {label_gini:.4f}')
+
+leaf_id = dt.apply(test.iloc[:,:-1])
+prob_positive = dt.predict_proba(test.iloc[:,:-1])[:,0]
+dt_gini = 0
+for leaf_node in np.unique(leaf_id):
+    num_of_sample = sum(leaf_id == leaf_node)
+    pc = sum(prob_positive[leaf_id == leaf_node])/num_of_sample
+    dt_gini += (pc * (1-pc)) * num_of_sample/len(test)
+
+print(f'Gini Impurity of the Labels: {dt_gini:.4f}')
+print(f'Total Gini gain: {label_gini:.4f} - {dt_gini:.4f} = {label_gini-dt_gini:.4f}')
+
+
+Clustering k값은 문제에 주어진것(또는 하이퍼 페러미터)
+
+# YOUR CODE HERE
+q25 = Au_data[['Total_E', 'Formation_E']]
+km = KMeans(n_clusters=5).fit(q25)
+
+colors=["red","blue","green","purple","orange"]
+clus = km.predict(q25)
+
+# plotting with different coloured clusters and showing cluster centres
+plt.figure(figsize=(12,8))
+for i in range(5):
+    plt.scatter(q25['Total_E'][clus==i], q25['Formation_E'][clus==i], label=i, c=colors[i], alpha=0.5)
+plt.scatter(km.cluster_centers_[:,0], km.cluster_centers_[:,1], label='Cluster Centers', c="black", s=200)
+plt.title("K-Means Clustering",size=20)
+plt.xlabel('Total_E', size=16)
+plt.ylabel('Formation_E', size=16)
+plt.legend()
+plt.show()
+
+#elbow
+
+# YOUR CODE HERE
+inertias = []
+K = range(2, 10)
+  
+for k in K:
+    # Building and fitting the model
+    kmeanModel = KMeans(n_clusters=k).fit(q25)
+    inertias.append(kmeanModel.inertia_)
+
+plt.figure(figsize=(12,8))
+plt.plot(K, inertias)
+plt.xlabel('K', size=16)
+plt.ylabel('Total Within Cluster Sum of Squares', size=16)
+plt.show()
+
+
+#sihoullete
+
+# YOUR CODE HERE
+def disSum(d, clus):
+    return np.sum([pairwise_distances(d.reshape(1,-1), clus)])
+def disMean(d, clus):
+    return disSum(d,clus)/len(clus)
+def sil(d, label, clusList):
+    a = disSum(d, clusList[label]) / (len(clusList[label])-1)
+    b = np.min([disMean(d, clusList[i]) for i in range(len(clusList)) if i!=label])
+    return (b-a)/np.max([a,b])
+
+sils = []
+K = range(2, 10)
+
+for k in K:
+   # Building and fitting the model
+    kmeanModel = KMeans(n_clusters=k).fit(q25)
+    pred = kmeanModel.predict(q25)
+    clusList = [q25[pred==i] for i in range(k)]
+    sils.append(np.mean([sil(d, label, clusList) for d, label in zip(q25.values, pred)]))
+
+plt.figure(figsize=(12,8))
+plt.plot(K, sils)
+plt.xlabel('Number of Cluster k', size=16)
+plt.ylabel('Average Silhouette Width', size=16)
+plt.show()
+
+
