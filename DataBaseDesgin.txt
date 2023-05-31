@@ -6,9 +6,15 @@ The database is in first normal form given that:
 3. All attributes are uniquely determined by the primary key (for Participant, different ParticipatID will need to be assigned in every new match).
 
 The database is also in 2NF given that it is in 1NF and all non-key attributes are uniquely determined by the entire primary key - no partial redundancy exists.
+짧은답변:Table is in 1NF and no dependency attributes
 
 The database is not in 3NF since not all non-key attributes depend on the key(s) solely - if we try to update Eliminations number for a participant, the TimeInMatch will need to be updated potentially.
 
+database에서의 flat과 hierachical 차이
+Flat file is like an excel sheet, where the data is written in simple table format. Whereas Hierarchical is where the data is organised into a tree-like structure, an example is IBM Information Management System (IMS).
+
+Data definition language와 data manipulation 언어의차이
+Data definition is sepcifying the database structure, while data manipulation is the access/modification of the data from the storage.
 
 =====================================sql data 만들기 ==========================
 1. 테이블 예시  테이블 이름 타입 널 선택  그리고 밑에서 foreignkey와 primarykey 지정 (과제에서도 별로 강조안되던거여서 주의요망)

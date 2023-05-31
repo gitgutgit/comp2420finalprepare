@@ -1,3 +1,31 @@
+셔술형 대비  cia tiad
+트라이어도 요약 Confidentiality, Integrity and Avalability
+It is only accessed to those people with the correct security clearance and integrity means data cannot be modfied by other user. Lastly the information is available to the correct person.
+
+아래는 조금 길게 서술.
+Confidentiality – preserving authorizedrestrictions on information access and disclosure, including means forprotecting personal privacy andproprietary information.
+Integrity — guarding against improperinformation modification or destructionand ensuring information non-repudiationand authenticity.
+Availability – ensuring timely and reliable access to and use of information
+
+Authenticity refers to the assurance that information is genuine, accurate, and trustworthy. It involves verifying the identity of the sender and ensuring that the information has not been tampered with or modified in an unauthorized manner. Authenticity measures are put in place to prevent forgery, unauthorized alterations, or misrepresentation of information. By ensuring authenticity, organizations can maintain trust in the information they receive and rely on its accuracy and reliability.
+
+기밀성 – 개인 정보 보호 및 소유권 정보 보호 수단을 포함하여 정보 액세스 및 공개에 대한 권한 있는 제한 사항을 유지합니다.
+무결성 - 부적절한 정보 수정 또는 파괴를 방지하고 정보 거부 및 신뢰성을 보장합니다.
+가용성 – 정보에 대한 적시의 안정적인 액세스 및 사용 보장
+
+
+Authenticity 은 정보가 진실되고 정확하며 신뢰할 수 있는 것임을 보장하는 것을 말합니다. 이는 발신자의 신원을 확인하고 정보가 무단으로 변경되거나 수정되지 않았음을 보장하는 것을 포함합니다. 정통성 조치는 위조, 무단 변경 또는 정보의 잘못된 표현을 방지하기 위해 시행됩니다. 정보의 정통성을 보장함으로써 조직은 받은 정보에 대해 신뢰를 유지하고 그 정확성과 신뢰성에 의존할 수 있습니다.
+
+==암호 hash? 판단 규칙3개
+
+1.hash1 violates the deterministic property. 랜덤 가챠등.. 복호화가 불가능한 결정불가능성질일떄
+
+2.1The output length is variable
+2.2And hash2 violates pre-image resistantance (we can figure out the character mappings) 예측가능한 mapping느낌이어서..
+
+3.hash3 violates collosion resistantance. We can easily come up with message pairs that hash to the same value.
+ 다른문자가 같은값이 나올수있음 충돌
+
 RSA
 
 #쉽게요약하면 남한테 받은 랜덤 넘버^자기 넘버 제곱    mod 공용 primenumber      = 어떤값 이게 common secret key
@@ -19,7 +47,7 @@ n=p*q;
 #  N = p*q   is formula 
  #   r = (p-1)*(q-1) 
 print(f'Alice\'s private key is ({d},{n})') #  d ,n    m = c^d mod N
-print(f'Alice\'s public key is ({e},{n})') # e,n 약속같은느낌  c = m^e mod N
+print(f'Alice\'s public key is ({e},{n})') # e,n 약속같은느낌  c = m^e mod N => crypto message 공식  문자^e mod n
 
 
 
@@ -41,6 +69,51 @@ PET(Privacy enhancing Technologies) has been mainly be used by online users to p
 Discuss why it is important to consider ethical implications when creating a machine learning model to predict the amount of credit someone can receive on a credit card.
 요약하자면 윤리적인걸 안따지면 차별점이 생길수가있다 APPLECARD사태처럼 여성차별등
 Take for example the Apple's credit card discussed before. If we do not consider ethical implications, and not check the data, the model could have been using implied data to identify certain people and find unintended pattern in predicting the credit one should receive. 
+
+
+
+
+
+
+
+비대칭과 대칭 암호학
+
+Asymmetric cryptography, also known as public-key cryptography, is a cryptographic system that uses a pair of mathematically related keys for encryption and decryption: a public key and a private key. The public key is openly distributed and can be used by anyone to encrypt messages or verify digital signatures. The private key, on the other hand, is kept secret and is used for decrypting messages or generating digital signatures. The key pair is asymmetric because the public key cannot be used to derive the private key, ensuring the security of the system.
+
+Symmetric cryptography, also known as secret-key cryptography, is a cryptographic system that uses the same key for both encryption and decryption. In this system, the same secret key is used by both the sender and the receiver to encrypt and decrypt messages. Since the same key is used, symmetric cryptography is typically faster and more efficient than asymmetric cryptography, but it requires secure distribution of the secret key to maintain confidentiality.
+
+Here's an example to illustrate the difference between asymmetric and symmetric cryptography
+
+
+
+
+비대칭 암호화(Asymmetric cryptography)는 공개키 암호화라고도 불리며, 암호화와 복호화를 위해 수학적으로 연관된 두 개의 키, 즉 공개키와 개인키를 사용하는 암호화 시스템입니다. 공개키는 공개적으로 배포되며 누구나 메시지를 암호화하거나 디지털 서명을 확인하는 데 사용할 수 있습니다. 반면, 개인키는 비밀로 유지되며 메시지를 복호화하거나 디지털 서명을 생성하는 데 사용됩니다. 이러한 키 쌍은 비대칭적인 특성을 가지며, 공개키로부터 개인키를 유도할 수 없어 시스템의 보안을 보장합니다.
+
+대칭 암호화(Symmetric cryptography)는 대칭키 암호화라고도 불리며, 암호화와 복호화에 동일한 키를 사용하는 암호화 시스템입니다. 이 시스템에서는 발신자와 수신자 모두 동일한 비밀 키를 사용하여 메시지를 암호화하고 복호화합니다. 동일한 키를 사용하기 때문에 대칭 암호화는 일반적으로 비대칭 암호화보다 더 빠르고 효율적이지만, 기밀성을 유지하기 위해 비밀 키의 안전한 배포가 필요합니다.
+
+다음은 비대칭 암호화와 대칭 암호화의 차이를 설명하는 예시입니다:
+
+앨리스가 밥에게 비밀 메시지를 보내고자 할 때:
+
+비대칭 암호화:
+
+밥은 공개키와 개인키의 키 쌍을 생성합니다.
+밥은 자신의 공개키를 앨리스와 공유합니다.
+앨리스는 밥의 공개키를 사용하여 메시지를 암호화합니다.
+앨리스는 암호화된 메시지를 밥에게 보냅니다.
+밥은 개인키를 사용하여 메시지를 복호화합니다.
+대칭 암호화:
+
+앨리스와 밥은 미리 공유한 비밀 키를 합의합니다.
+앨리스는 비밀 키를 사용하여 메시지를 암호화합니다.
+앨리스는 암호화된 메시지를 밥에게 보냅니다.
+밥은 동일한 비밀 키를 사용하여 메시지를 복호화합니다.
+비대칭 암호화의 예시에서는 밥의 공개키가 암호화에 사용되고, 개인키가 복호화에 사용됩니다. 대칭 암호화의 예시에서는 앨리스와 밥이 모두 동일한 비밀 키를 암호화와 복호화에 사용합니다.
+
+
+
+
+
 
 
 

@@ -1,6 +1,74 @@
 from lab5 로지스틱 회귀, k-NEAREST 이웃모델, CLASSIFICATION 분류
  유니크와 sort를 이용한 리스트 저장및 그걸로 for loop로  bar그래프 그리기!!
 
+유용한 IMPORT
+import itertools
+from sklearn.metrics import accuracy_score,f1_score      print("Accuracy score: ",accuracy_score(test_y,pred)))  print("F1 score: ",f1_score(test_y,pred))
+from sklearn.decomposition import PCA                   
+from sklearn.preprocessing import LabelEncoder
+
+
+KNN 최고의 예시!! 중 K가 고정이고 요소 하이퍼 페러미터 K 하이퍼는 아래 내리면있음
+def pairChecker(data):
+    """
+    Input/s: Dataframe of every column in the dataset
+    Expected Output/s: The names of the best performing pair of models based on accuracy of KNN classifier as a list.
+    
+    Expected steps: Determine the pairs of columns that can be used, for each pair implement a KNN classifier and
+                    check the accuracy score. Return the column names of the pair with the best accuracy score as a list.
+    """
+   
+    # Your Code Here
+    column_names=list(poke_data.columns[3:-1])
+    
+    best_features = []
+    best_score = -1
+    for i in range(len(column_names) - 1):
+        for j in range(i+1, len(column_names) - 1):
+            knn = KNeighborsClassifier(n_neighbors=10)  
+            features_to_test = [column_names[i],column_names[j]]
+            Iter_data =poke_data[features_to_test]
+            Iter_data["Legendary"] =poke_data["Legendary"] #add new row
+            train,test=train_test_split(Iter_data,test_size=0.2)             
+            knn_model = knn.fit(train.iloc[:,:-1], train.iloc[:,-1]) 
+            test_score= knn_model.score(test.iloc[:,:-1],test.iloc[:,-1])
+            # find the best hyper
+            if best_score <= test_score:
+                best_score = test_score
+                best_model = knn_model
+                best_features = features_to_test
+    return best_features
+
+
+
+하이퍼 패러미터를 찾은 후 
+
+
+# Your Code Here
+X=poke_data[pairChecker(poke_data)]
+y=poke_data['Legendary']
+
+train_x,test_x,train_y,test_y=train_test_split(X,y,test_size=0.2)
+
+
+#KNN
+knn_model=KNeighborsClassifier(n_neighbors=10)
+knn_model.fit(train_x,train_y)
+pred=knn_model.predict(test_x)
+print("KNN")
+print("Accuracy score: ",accuracy_score(test_y,pred))
+print("F1 score: ",f1_score(test_y,pred))
+print()
+
+
+
+
+
+
+
+
+
+
 로지스틱 PREDICT ACCURANCY
 from sklearn.metrics import accuracy_score
 pred_train_y = lr.predict(train_X)
@@ -153,7 +221,7 @@ for k in [1,2,3,5,7,9,15,31,51,train_x_scaled.shape[0]]:
     if best_score <= val_score:
         best_score = val_score
         best_model = knn_model
-        besk_k = k
+        best_k = k
 
 print(f'The best k is {besk_k} and the best val score is {best_score:.4f}')
 

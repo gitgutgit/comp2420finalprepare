@@ -109,7 +109,10 @@ print(f'Testing RMSE value: {np.sqrt(mean_squared_error(lr232.predict(np.array(q
 
 
 
-===
+     
+=== 
+
+
 4. TREE!! TREE는 요소들과 결정요소 가필요  GDP >500 이냐  등 YES NO로 (0 1로하든가)
 # YOUR CODE HERE 중간고사 방법 은 label encode 방식
 avg=Au_data['Formation_E'].mean()
@@ -142,6 +145,9 @@ train, test = train_test_split(q24, test_size=.2)
 
 
 
+
+ac랑 f1뽑는법
+from sklearn.metrics import accuracy_score,f1_score      print("Accuracy score: ",accuracy_score(test_y,pred)))  print("F1 score: ",f1_score(test_y,pred)) 
 
 
 dt = DecisionTreeClassifier(max_depth=3).fit(train.iloc[:,:-1], train.iloc[:,-1])
@@ -198,7 +204,8 @@ for max_depth in [3, 4]:
 
 
 
-
+kmean로만든 clustering의 한계
+KMeans is relatively simple to implement and generalizes to different clusters. However, a limitation is tht we have to choose k manually and the outcome is dependent on the inital values of the cluster centers.
 
 5. Clustering k값은 문제에 주어진것(또는 하이퍼 페러미터)
 
@@ -209,6 +216,7 @@ km = KMeans(n_clusters=5).fit(q25)
 colors=["red","blue","green","purple","orange"]
 clus = km.predict(q25)
 
+NON REDUCED 버전 
 # plotting with different coloured clusters and showing cluster centres
 plt.figure(figsize=(12,8))
 for i in range(5):
@@ -219,6 +227,31 @@ plt.xlabel('Total_E', size=16)
 plt.ylabel('Formation_E', size=16)
 plt.legend()
 plt.show()
+
+5.12 REDUCED가 필요한버전  SUBPLOT경우에는 여러개 그려야할경우에만
+#If we are using numerical data
+fig = plt.figure(figsize=(15,5))
+colors=["red","green","blue","brown","purple"] 색깔은 꼴리는대로
+
+pca = PCA(n_components=2)
+poke_reduced=pd.DataFrame(pca.fit_transform(poke_data.iloc[:,3:-1])) 
+
+#Five cluster
+km5_model = KMeans(n_clusters=5)
+km5_model.fit(poke_reduced)
+
+ax1 = fig.add_subplot(121)
+for i in range(np.max(km5_model.labels_)+1):
+    plt.scatter(poke_reduced[km5_model.labels_==i].iloc[:,0], poke_reduced[km5_model.labels_==i].iloc[:,1], label=i, c=colors[i], alpha=0.5)
+plt.scatter(km5_model.cluster_centers_[:,0], km5_model.cluster_centers_[:,1], label='Cluster Centers', c="black", s=200)
+plt.title("K-Means 5 Cluster of Pokemon",size=20)
+plt.xlabel("Principle Component 1", size=16)
+plt.ylabel("Principle Component 2", size=16)
+plt.legend()
+
+
+
+
 5.2 센터가 필요없을떄 그리고 pca를해서 2차원으로햇거나 또는 어차피 2개 일떄
 
 # YOUR CODE HERE

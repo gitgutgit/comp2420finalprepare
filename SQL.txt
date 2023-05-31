@@ -1,6 +1,8 @@
 conn =  create_connection("./data/premier.db")
 
 ===sql 기초========================
+최대최소 MAX로도 가능하지만 요소가 필요할떈 query = """SELECT * FROM parts ORDER BY Weight DESC limit 1;"""
+
 1.테이블 목록?이름 가져오기
 query = "SELECT name, sql FROM sqlite_master WHERE type='table';"  
 2. max 키워드 와 유동적인 열 생성
@@ -55,6 +57,17 @@ inJoin_query = """SELECT
                 FROM albums a  <=이렇게 약자로 축약하면
                 INNER JOIN artists r
                     ON a.ArtistId = r.ArtistId;"""    <=컨디션은 on에서결정
+join 예시2 distince도 사용한것 주의 여기서 그냥 name하면 에러뜰수도
+query = """SELECT Distinct s.name FROM suppliers s
+        Join requests r
+        ON r.s_id = s.s_id
+        Join jobs j
+        ON j.j_id = r.j_id
+        Where j.name = "Console";"""
+df_result = pd.read_sql_query(query, conn)      
+df_result
+
+
 10.Left Join + where is null  <= inner냐 left냐 이름 만 바꾸면되서 방법은 차이가없음 다만 . 구조적으로 조금다름
 https://velog.io/@profile_exe/SQL-LEFT-JOIN-INNER-JOIN-%EC%B0%A8%EC%9D%B4
 쉽게생각하면 inner조인은 교집합 left조인은  교집합+ left(A왼쪽꺼) 까지 전부    right면 반대  이건 null을 발생시킴
@@ -69,8 +82,15 @@ LEFT JOIN albums ON
 WHERE Title IS NULL
 ORDER BY Name"""
 
+ 
+11. natrual join 이건 그냥 외우기 일단 on이 안들어감 설명은 여기 https://pakker.tistory.com/115
+Find all (suppliers, parts) where the supplier doesn't have enough parts to fill their requests.
+하도 배배 꼬였을땐 사용하자
 
-
+	
+query="""SELECT s_id,p_id FROM supplier_inventory AS si NATURAL JOIN
+        (SELECT s_id,p_id,SUM(quantity) AS sum FROM requests GROUP BY s_id,p_id) AS req
+        WHERE si.quantity<req.sum;"""
 
 
 =====================================sql data 만들기 ==========================
