@@ -44,7 +44,58 @@ plt.title('Volumn vs Formation_E and with Trained Model')
 plt.legend(loc='best')
 plt.plot()
 
-3.2 DISCUSS 어떤 것이 CHARATERISE MODEL인지 (EVALUATE MODEL)
+
+3.2  LINER REGRESSION 에서 정수값인 아닌 요소 가있을떄 또는 뭐 A  B C D 타입 이렇게 문자 종류일떈 0001 0010 등 인코딩해서하느넙
+다만 여기서 first_drope한이유 중 나머지 요소가 다 0이면 코너라는 뜻이니까.. 굳이 안없앨려면 안없애도 될듯?? 근데 효율성
+여기선 concat안하는이유 전부 요소가안인 lotconfig만 따지니까 저거 그대롴쓰면됨
+
+https://piazza.com/class/le586uf3fin6sy/post/714 참고 label encode dummy등
+이방식은 label 방식 중간고사
+Au_data['GTAvg'] = Au_data['Formation_E']>=avg   이렇게 TRURE /FALSE가 나오게만들었으면
+Au_data['GTAvg'] = Au_data['GTAvg'].astype(str).map({'False': 'No', 'True':'Yes'})  <= 근데 사실 이게 여기서필요한진모르겠음
+
+
+다른 one hot 방식 이건 파이널2022방식
+one_hot_vc = pd.get_dummies(q4_df[[ 'Fuel Type']])
+q4_df = q4_df.drop([ 'Fuel Type'], 1)        fuel type을 여러종류 나눴으니까 그냥 fueltype자체는드랍하고
+q4_df = pd.concat((q4_df,one_hot_vc),1)           one_hot_vc를 concat한다! 아래 lab은 그냥 x가 그것만써서 concat을안한거
+
+
+이방식은 one hot 방식 (lab4)
+# we'll do the encoding for you today
+X = houses["LotConfig"]
+enc_X = pd.get_dummies(X, drop_first=True)             # create K-1 new columns, ignore the first level
+dropped_level = np.sort(houses["LotConfig"].unique())[0]
+
+# fitting the regression
+y = houses["SalePrice"]
+lr = LinearRegression()
+model = lr.fit(enc_X, y)                               # same as before, using an encoded variable
+
+# outputting the results
+categories = enc_X.columns
+print("Intercept is", int(model.intercept_))
+print("Coefficient for", dropped_level, "is 0 (because we dropped the first dummy level)")
+for i, coef in enumerate(model.coef_):
+    print("Coefficient for", categories[i], "is", int(coef))
+
+
+이건 리코드하는법 아래처럼 다시정렬
+# TODO: recode LotShape to be numeric
+# we can use factorize to do this easily
+houses["LotShapeRecode"] = pd.factorize(houses["LotShape"])[0]
+houses["LotShapeRecode"].value_counts()    # compare to previous value counts
+
+0    925
+1    484
+2     41
+3     10 다시 이렇게 뜨는법
+
+
+
+
+
+3.3 DISCUSS 어떤 것이 CHARATERISE MODEL인지 (EVALUATE MODEL)
 r^2 와 RMSE  둘중하나만해도됨
 # YOUR CODE HERE
 true_y = q231["Formation_E"]
@@ -60,7 +111,7 @@ print(f'Testing RMSE value: {np.sqrt(mean_squared_error(lr232.predict(np.array(q
 
 ===
 4. TREE!! TREE는 요소들과 결정요소 가필요  GDP >500 이냐  등 YES NO로 (0 1로하든가)
-# YOUR CODE HERE
+# YOUR CODE HERE 중간고사 방법 은 label encode 방식
 avg=Au_data['Formation_E'].mean()
 Au_data['GTAvg'] = Au_data['Formation_E']>=avg
 Au_data['GTAvg'] = Au_data['GTAvg'].astype(str).map({'False': 'No', 'True':'Yes'})
@@ -69,9 +120,29 @@ q24 = Au_data[['Volume', 'N_bulk', 'N_bonds', 'R_avg', 'HCP', 'GTAvg']]
 #yes no방식으로 했다면 label encoder 하면됨 다만 q24[원래내용] = le 이렇게해서 적용시킬 데이터프레임에 잘 적용시켱냐함
 le = LabelEncoder()
 q24['GTAvg'] = le.fit_transform(q24['GTAvg'])
+
+
+
+
+
+
+
+
+
 #당연히 train,test
 train, test = train_test_split(q24, test_size=.2)
 # 이젠 d.t 및 !! -1하는이유  gtavg 0 1 판독해둔걸 뺴고 넣어야하니까 x에는 y에 그 나머지하나를 넣으면됨 그래서 아래는 거의 고정느낌)
+
+
+
+
+
+
+
+
+
+
+
 
 dt = DecisionTreeClassifier(max_depth=3).fit(train.iloc[:,:-1], train.iloc[:,-1])
 ypredtrain = dt.predict(train.iloc[:,:-1])
@@ -148,6 +219,20 @@ plt.xlabel('Total_E', size=16)
 plt.ylabel('Formation_E', size=16)
 plt.legend()
 plt.show()
+5.2 센터가 필요없을떄 그리고 pca를해서 2차원으로햇거나 또는 어차피 2개 일떄
+
+# YOUR CODE HERE
+
+pca = PCA(n_components=2)
+cluter_df = q3q4_df[['Fuel Consumption Comb (L/100 km)', 'CO2 Emissions(g/km)', 'Engine Size(L)', 'Cylinders']]
+km_model = KMeans(n_clusters=5)
+reduced_df = pca.fit_transform(cluter_df)
+km_model.fit(reduced_df)
+
+sns.scatterplot(x=reduced_df[:, 0], y=reduced_df[:, 1], hue = map(lambda x : 'Cluster '+str(x), km_model.labels_ + 1))
+plt.title('KMeans K = 5')
+plt.show()
+
 
 
 =============elbow sihooullete hyper..
