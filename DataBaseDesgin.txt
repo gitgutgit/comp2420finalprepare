@@ -1,0 +1,24 @@
+서술형파트 1정규 2정규 3정규
+
+The database is in first normal form given that:
+1. All attribute domains are atomic;
+2. All attreibutes contain only a single value;
+3. All attributes are uniquely determined by the primary key (for Participant, different ParticipatID will need to be assigned in every new match).
+
+The database is also in 2NF given that it is in 1NF and all non-key attributes are uniquely determined by the entire primary key - no partial redundancy exists.
+
+The database is not in 3NF since not all non-key attributes depend on the key(s) solely - if we try to update Eliminations number for a participant, the TimeInMatch will need to be updated potentially.
+
+
+=====================================sql data 만들기 ==========================
+1. 테이블 예시  테이블 이름 타입 널 선택  그리고 밑에서 foreignkey와 primarykey 지정 (과제에서도 별로 강조안되던거여서 주의요망)
+CREATE TABLE raw_materials_usage (
+  lot_number VARCHAR(15) NOT NULL,
+  material_id VARCHAR(15) NOT NULL,
+  units INT,
+  FOREIGN KEY (lot_number) REFERENCES lot,
+  FOREIGN KEY (material_id) REFERENCES raw_materials,
+  PRIMARY KEY (lot_number, material_id)
+);
+
+2. 시간나면 만들예정

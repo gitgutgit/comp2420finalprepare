@@ -15,8 +15,8 @@ WHERE column_3 LIKE 'SMITH%'; SMITH로 시작? 일단포함
  WHERE column_2 IN (1,2,3);    어디안에 포함되는지
 WHERE column_4 BETWEEN 10 AND 20;   값사이
 
-4.avg 와 groub by ,HAVING!!!!!
-query = 'SELECT player_id, AVG(goals) FROM game_stats GROUP BY player_id;' (AVG와 GROUB BY)
+4.avg 와 groub by ,HAVING!!!!!, 어떤거 as 이름으로 하면 이름을 이렇게 바꿔서 표현하는거
+query = 'SELECT player_id, AVG(goals) as number_of goals FROM game_stats GROUP BY player_id;' (AVG와 GROUB BY)
 종합선물세트  COUNT를써서 HAVING에조건을만들고 그중에서도 BETWEEN을넣어 18과 20사이로만  그리고 ORDER 는 ALUBMID 오름차순으로(DEFAULT가 ASC라)
 
 album1820_query = """SELECT * FROM tracks
